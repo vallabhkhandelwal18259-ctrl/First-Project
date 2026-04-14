@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pathshala – Syllabus Personal Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* =============================================
+       CSS VARIABLES – Change these to retheme the app
+    ============================================= */
+    :root {
+      --primary:      #1e3a8a;
+      --primary-light:#3b5fcf;
+      --accent:       #f59e0b;
+      --accent2:      #10b981;
+      --danger:       #ef4444;
+      --warn:         #f97316;
+      --bg:           #f0f4ff;
+      --card:         #ffffff;
+      --text:         #1e293b;
+      --muted:        #64748b;
+      --border:       #e2e8f0;
+      --sidebar-w:    260px;
+      --radius:       14px;
+      --shadow:       0 4px 24px rgba(30,58,138,.10);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    h1,h2,h3,h4 { font-family: 'Sora', sans-serif; }
+    a { text-decoration: none; color: inherit; }
+    button { cursor: pointer; font-family: inherit; }
+    input, textarea, select {
+      font-family: inherit;
+      outline: none;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: .95rem;
+      width: 100%;
+      background: #fff;
+      transition: border .2s;
+    }
+    input:focus, textarea:focus, select:focus { border-color: var(--primary-light); }
+    textarea { resize: vertical; min-height: 80px; }
+
+    .hidden   { display: none !important; }
+    .flex     { display: flex; }
+    .items-center { align-items: center; }
+    .gap-2    { gap: .5rem; }
+    .gap-3    { gap: .75rem; }
+    .gap-4    { gap: 1rem; }
+    .mt-1     { margin-top: .25rem; }
+    .mt-2     { margin-top: .5rem; }
+    .mt-3     { margin-top: .75rem; }
+    .mt-4     { margin-top: 1rem; }
+    .text-sm  { font-size: .875rem; }
+    .text-xs  { font-size: .78rem; }
+    .text-muted { color: var(--muted); }
+    .bold     { font-weight: 700; }
+    .w-full   { width: 100%; }
+
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: .45rem;
+      padding: 10px 20px; border-radius: 8px; font-size: .9rem; font-weight: 600;
+      border: none; transition: all .18s; white-space: nowrap;
+    }
+    .btn-primary { background: var(--primary); color: #fff; }
+    .btn-primary:hover { background: var(--primary-light); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(30,58,138,.25); }
+    .btn-accent  { background: var(--accent); color: #1e293b; }
+    .btn-accent:hover { filter: brightness(1.08); transform: translateY(-1px); }
+    .btn-green   { background: var(--accent2); color: #fff; }
+    .btn-green:hover { filter: brightness(1.08); }
+    .btn-danger  { background: var(--danger); color: #fff; }
+    .btn-danger:hover { filter: brightness(1.1); }
+    .btn-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary); }
+    .btn-outline:hover { background: var(--primary); color: #fff; }
+    .btn-sm { padding: 6px 14px; font-size: .82rem; border-radius: 6px; }
+    .btn-icon { padding: 8px; border-radius: 8px; background: var(--bg); border: 1.5px solid var(--border); }
+    .btn-icon:hover { background: var(--border); }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      padding: 1.25rem;
+    }
+
+    .badge {
+      display: inline-flex; align-items: center; padding: 2px 10px;
+      border-radius: 999px; font-size: .75rem; font-weight: 600;
+    }
+    .badge-blue   { background: #dbeafe; color: #1e40af; }
+    .badge-green  { background: #d1fae5; color: #065f46; }
+    .badge-amber  { background: #fef3c7; color: #92400e; }
+    .badge-red    { background: #fee2e2; color: #991b1b; }
+    .badge-purple { background: #ede9fe; color: #5b21b6; }
+
+    .alert {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .75rem 1rem; border-radius: 9px; font-size: .88rem; font-weight: 500;
+      margin-bottom: .5rem;
+    }
+    .alert-danger { background: #fee2e2; color: #991b1b; border-left: 4px solid var(--danger); }
+    .alert-warn   { background: #fff7ed; color: #9a3412; border-left: 4px solid var(--warn); }
+    .alert-info   { background: #eff6ff; color: #1e40af; border-left: 4px solid var(--primary); }
+
+    /* LOGIN PAGE */
+    #loginPage {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1e3a8a 0%, #3b5fcf 60%, #7c3aed 100%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .login-box {
+      background: #fff;
+      border-radius: 20px;
+      padding: 2.5rem 2.25rem;
+      width: 100%; max-width: 420px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.25);
+    }
+    .login-logo { text-align: center; margin-bottom: 1.5rem; }
+    .login-logo .logo-icon {
+      width: 64px; height: 64px; background: var(--primary);
+      border-radius: 16px; display: inline-flex; align-items: center; justify-content: center;
+      font-size: 2rem; margin-bottom: .75rem;
+    }
+    .login-logo h1 { font-size: 1.8rem; color: var(--primary); }
+    .login-logo p  { color: var(--muted); font-size: .9rem; }
+    .form-group { margin-bottom: 1rem; }
+    .form-group label { display: block; font-weight: 600; font-size: .88rem; margin-bottom: .35rem; }
+    .tab-btns { display: flex; background: var(--bg); border-radius: 9px; padding: 3px; margin-bottom: 1.5rem; }
+    .tab-btn { flex: 1; padding: 7px; border: none; background: transparent; border-radius: 7px; font-weight: 600; font-size: .9rem; color: var(--muted); transition: all .2s; }
+    .tab-btn.active { background: #fff; color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,.08); }
+    #loginError { color: var(--danger); font-size: .85rem; margin-top: .5rem; }
+
+    /* APP SHELL */
+    #appShell { display: flex; min-height: 100vh; }
+
+    .sidebar {
+      width: var(--sidebar-w);
+      background: var(--primary);
+      color: #fff;
+      display: flex; flex-direction: column;
+      position: fixed; top: 0; left: 0; height: 100vh;
+      overflow-y: auto; z-index: 100;
+      transition: transform .3s;
+    }
+    .sidebar-header {
+      padding: 1.25rem 1rem;
+      display: flex; align-items: center; gap: .6rem;
+      border-bottom: 1px solid rgba(255,255,255,.12);
+    }
+    .sidebar-header .s-icon {
+      width: 38px; height: 38px; background: rgba(255,255,255,.15);
+      border-radius: 10px; display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; flex-shrink: 0;
+    }
+    .sidebar-header h2 { font-size: 1.1rem; font-weight: 800; }
+    .sidebar-header p  { font-size: .7rem; opacity: .7; }
+    .sidebar-nav { flex: 1; padding: .75rem .5rem; }
+    .nav-section-title {
+      font-size: .68rem; text-transform: uppercase; letter-spacing: .08em;
+      opacity: .5; padding: .75rem .5rem .3rem; font-weight: 700;
+    }
+    .nav-item {
+      display: flex; align-items: center; gap: .6rem;
+      padding: .6rem .75rem; border-radius: 9px; margin-bottom: 2px;
+      font-size: .88rem; font-weight: 500; cursor: pointer;
+      transition: all .18s; color: rgba(255,255,255,.8);
+      border: none; background: transparent; width: 100%; text-align: left;
+    }
+    .nav-item:hover { background: rgba(255,255,255,.1); color: #fff; }
+    .nav-item.active { background: rgba(255,255,255,.18); color: #fff; font-weight: 700; }
+    .nav-item .nav-icon { font-size: 1rem; width: 20px; text-align: center; flex-shrink: 0; }
+    .sidebar-footer { padding: .75rem .75rem 1rem; border-top: 1px solid rgba(255,255,255,.12); }
+    .user-chip {
+      display: flex; align-items: center; gap: .6rem;
+      background: rgba(255,255,255,.1); border-radius: 9px; padding: .55rem .75rem;
+    }
+    .avatar {
+      width: 32px; height: 32px; border-radius: 50%; background: var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: .85rem; color: #1e293b; flex-shrink: 0;
+    }
+    .user-chip .user-name { font-size: .82rem; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .user-chip .user-email { font-size: .68rem; opacity: .6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .btn-logout {
+      display: flex; align-items: center; gap: .4rem;
+      background: transparent; border: none; color: rgba(255,255,255,.6);
+      font-size: .8rem; cursor: pointer; padding: .3rem 0; margin-top: .5rem;
+      font-family: inherit;
+    }
+    .btn-logout:hover { color: #fff; }
+
+    .main-content {
+      margin-left: var(--sidebar-w);
+      flex: 1; padding: 1.75rem 2rem;
+      min-height: 100vh;
+    }
+    .page { display: none; }
+    .page.active { display: block; }
+    .page-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem; flex-wrap: wrap; gap: .75rem;
+    }
+    .page-title { font-size: 1.6rem; font-weight: 800; color: var(--primary); }
+    .page-subtitle { color: var(--muted); font-size: .9rem; margin-top: .1rem; }
+
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.5rem; gap: 1rem;
+    }
+    .hamburger {
+      display: none; background: var(--card); border: 1.5px solid var(--border);
+      border-radius: 8px; padding: 8px; cursor: pointer; font-size: 1.1rem;
+    }
+
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+
+    /* DASHBOARD */
+    .stat-card {
+      background: var(--card); border-radius: var(--radius);
+      box-shadow: var(--shadow); border: 1px solid var(--border);
+      padding: 1.1rem 1.25rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .stat-icon {
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.4rem; flex-shrink: 0;
+    }
+    .stat-icon.blue   { background: #dbeafe; }
+    .stat-icon.amber  { background: #fef3c7; }
+    .stat-icon.green  { background: #d1fae5; }
+    .stat-icon.red    { background: #fee2e2; }
+    .stat-val { font-size: 1.6rem; font-weight: 800; font-family: 'Sora', sans-serif; }
+    .stat-lbl { font-size: .8rem; color: var(--muted); }
+
+    .subject-card {
+      background: var(--card); border-radius: var(--radius);
+      border: 1px solid var(--border); padding: 1rem 1.1rem;
+      cursor: pointer; transition: all .2s;
+      display: flex; flex-direction: column; gap: .4rem;
+    }
+    .subject-card:hover { border-color: var(--primary-light); box-shadow: 0 6px 24px rgba(30,58,138,.12); transform: translateY(-2px); }
+    .subject-card .s-icon-wrap {
+      width: 40px; height: 40px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+      margin-bottom: .2rem;
+    }
+    .subject-card h3 { font-size: .92rem; font-weight: 700; line-height: 1.3; }
+    .subject-card .s-type { font-size: .75rem; color: var(--muted); }
+    .progress-bar { height: 5px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-fill { height: 100%; border-radius: 99px; background: var(--primary-light); }
+
+    /* SUBJECT DETAIL */
+    .back-btn {
+      display: inline-flex; align-items: center; gap: .4rem;
+      color: var(--muted); font-size: .88rem; font-weight: 600;
+      background: none; border: none; cursor: pointer; margin-bottom: 1rem;
+      padding: 6px 10px; border-radius: 7px;
+    }
+    .back-btn:hover { background: var(--border); color: var(--text); }
+    .tabs { display: flex; gap: .3rem; border-bottom: 2px solid var(--border); margin-bottom: 1.25rem; flex-wrap: wrap; }
+    .tab {
+      padding: .55rem 1.1rem; font-size: .88rem; font-weight: 600; border: none;
+      background: none; color: var(--muted); cursor: pointer; border-bottom: 3px solid transparent;
+      transition: all .18s; border-radius: 7px 7px 0 0; margin-bottom: -2px;
+    }
+    .tab:hover { color: var(--primary); background: rgba(59,95,207,.05); }
+    .tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+    .note-item {
+      display: flex; align-items: flex-start; gap: .75rem;
+      padding: .85rem 1rem; border: 1px solid var(--border);
+      border-radius: 9px; margin-bottom: .55rem; background: #fff;
+      transition: border .18s;
+    }
+    .note-item:hover { border-color: var(--primary-light); }
+    .note-item-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: 2px; }
+    .note-item h4 { font-size: .9rem; font-weight: 700; margin-bottom: .15rem; }
+    .note-item p  { font-size: .83rem; color: var(--muted); }
+    .note-item a  { color: var(--primary-light); font-size: .83rem; font-weight: 600; }
+    .note-item a:hover { text-decoration: underline; }
+    .yt-card {
+      display: flex; align-items: center; gap: .85rem;
+      padding: .85rem 1rem; border: 1px solid var(--border);
+      border-radius: 9px; margin-bottom: .55rem; background: #fff;
+      transition: border .18s; cursor: pointer;
+    }
+    .yt-card:hover { border-color: #ef4444; }
+    .yt-thumb {
+      width: 56px; height: 40px; background: #ef4444;
+      border-radius: 7px; display: flex; align-items: center; justify-content: center;
+      color: #fff; font-size: 1.3rem; flex-shrink: 0;
+    }
+    .yt-card h4 { font-size: .88rem; font-weight: 700; margin-bottom: .1rem; }
+    .yt-card p  { font-size: .78rem; color: var(--muted); }
+
+    /* ASSIGNMENTS */
+    .reminder-zone { margin-bottom: 1.25rem; }
+    .assign-list { display: flex; flex-direction: column; gap: .6rem; }
+    .assign-item {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: .85rem 1rem;
+      display: flex; align-items: center; gap: .75rem; flex-wrap: wrap;
+    }
+    .assign-item.done { opacity: .55; }
+    .assign-item .a-check { width: 20px; height: 20px; cursor: pointer; accent-color: var(--primary); flex-shrink: 0; }
+    .assign-item .a-title { font-weight: 600; font-size: .92rem; flex: 1; min-width: 120px; }
+    .assign-item .a-subject { font-size: .78rem; color: var(--muted); }
+    .assign-item .a-due { font-size: .82rem; font-weight: 600; }
+    .assign-item .a-due.overdue { color: var(--danger); }
+    .assign-item .a-due.urgent  { color: var(--warn); }
+    .assign-item .a-due.normal  { color: var(--accent2); }
+    .assign-form {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.25rem;
+    }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+
+    /* COMMUNITY NOTES */
+    .community-card {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 1rem 1.1rem; margin-bottom: .75rem;
+    }
+    .community-card .c-header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .5rem; margin-bottom: .5rem; }
+    .community-card h3 { font-size: .95rem; font-weight: 700; }
+    .community-card .c-body { font-size: .88rem; color: var(--muted); line-height: 1.55; }
+    .community-card .c-footer { display: flex; align-items: center; gap: .75rem; margin-top: .6rem; flex-wrap: wrap; }
+    .community-card .c-author { font-size: .78rem; color: var(--muted); display: flex; align-items: center; gap: .3rem; }
+    .share-form {
+      background: var(--card); border: 1px solid var(--primary-light);
+      border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.25rem;
+    }
+
+    /* CHATBOT */
+    #chatToggle {
+      position: fixed; bottom: 1.75rem; right: 1.75rem;
+      width: 58px; height: 58px; border-radius: 50%;
+      background: var(--primary); color: #fff;
+      font-size: 1.5rem; border: none; cursor: pointer;
+      box-shadow: 0 6px 24px rgba(30,58,138,.35);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 500; transition: transform .2s, background .2s;
+    }
+    #chatToggle:hover { transform: scale(1.08); background: var(--primary-light); }
+    #chatBox {
+      position: fixed; bottom: 5.5rem; right: 1.75rem;
+      width: 340px; max-height: 480px;
+      background: var(--card); border-radius: 18px;
+      box-shadow: 0 16px 48px rgba(0,0,0,.18);
+      border: 1px solid var(--border);
+      display: flex; flex-direction: column;
+      z-index: 499; overflow: hidden;
+      transform: scale(.92) translateY(10px); opacity: 0;
+      pointer-events: none;
+      transition: all .25s cubic-bezier(.4,0,.2,1);
+    }
+    #chatBox.open { transform: scale(1) translateY(0); opacity: 1; pointer-events: all; }
+    .chat-header {
+      background: var(--primary); color: #fff;
+      padding: .85rem 1rem; display: flex; align-items: center; gap: .6rem;
+    }
+    .chat-header .bot-avatar {
+      width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.2);
+      display: flex; align-items: center; justify-content: center; font-size: 1.1rem;
+    }
+    .chat-header h4 { font-size: .95rem; font-weight: 700; }
+    .chat-header p  { font-size: .72rem; opacity: .7; }
+    .chat-msgs {
+      flex: 1; overflow-y: auto; padding: .85rem; display: flex;
+      flex-direction: column; gap: .6rem;
+    }
+    .msg { display: flex; gap: .5rem; max-width: 88%; }
+    .msg.bot { align-self: flex-start; }
+    .msg.user { align-self: flex-end; flex-direction: row-reverse; }
+    .msg-bubble {
+      padding: .55rem .85rem; border-radius: 14px; font-size: .84rem; line-height: 1.5;
+    }
+    .msg.bot  .msg-bubble { background: var(--bg); color: var(--text); border-radius: 4px 14px 14px 14px; }
+    .msg.user .msg-bubble { background: var(--primary); color: #fff; border-radius: 14px 4px 14px 14px; }
+    .chat-input-row {
+      display: flex; gap: .5rem; padding: .75rem;
+      border-top: 1px solid var(--border);
+    }
+    .chat-input-row input { flex: 1; border-radius: 999px; padding: 8px 14px; font-size: .85rem; }
+    .chat-send {
+      width: 36px; height: 36px; border-radius: 50%; background: var(--primary);
+      color: #fff; border: none; cursor: pointer; font-size: 1rem;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+      transition: background .2s;
+    }
+    .chat-send:hover { background: var(--primary-light); }
+    .chat-suggestions { padding: 0 .75rem .5rem; display: flex; gap: .4rem; flex-wrap: wrap; }
+    .chat-chip {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 999px; padding: 4px 12px; font-size: .76rem;
+      cursor: pointer; font-weight: 600; color: var(--primary); transition: all .15s;
+    }
+    .chat-chip:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.45);
+      z-index: 600; display: flex; align-items: center; justify-content: center;
+      padding: 1rem;
+    }
+    .modal-box {
+      background: #fff; border-radius: 18px; padding: 1.75rem;
+      width: 100%; max-width: 480px; max-height: 85vh; overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,.2);
+    }
+    .modal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.25rem; }
+    .modal-header h3 { font-size: 1.15rem; font-weight: 800; color: var(--primary); }
+    .modal-close { background: var(--bg); border: none; border-radius: 8px; padding: 6px 10px; cursor: pointer; font-size: 1rem; }
+    .modal-close:hover { background: var(--border); }
+
+    /* RESPONSIVE */
+    @media (max-width: 900px) {
+      .grid-4 { grid-template-columns: repeat(2,1fr); }
+      .grid-3 { grid-template-columns: repeat(2,1fr); }
+    }
+    @media (max-width: 700px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .main-content { margin-left: 0; padding: 1rem; }
+      .hamburger { display: flex; }
+      .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+      .form-row { grid-template-columns: 1fr; }
+      #chatBox { width: calc(100vw - 2rem); right: 1rem; }
+    }
+
+    @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+    .fade-up { animation: fadeUp .35s ease both; }
+  </style>
+</head>
+<body>
+
+<!-- ================================================
+     LOGIN PAGE
+================================================ -->
+<div id="loginPage">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="logo-icon">📚</div>
+      <h1>Pathshala</h1>
+      <p>Syllabus Personal Tracker</p>
+    </div>
+
+    <div class="tab-btns">
+      <button class="tab-btn active" onclick="switchAuthTab('login')">Login</button>
+      <button class="tab-btn" onclick="switchAuthTab('register')">Register</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginForm">
+      <div class="form-group">
+        <label>College Email ID</label>
+        <input type="email" id="loginEmail" placeholder="yourname@college.edu" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="loginPass" placeholder="Enter password" />
+      </div>
+      <div id="loginError"></div>
+      <button class="btn btn-primary w-full mt-3" style="width:100%" onclick="doLogin()">🔐 Login</button>
+      <p class="text-sm text-muted" style="text-align:center;margin-top:.75rem;">
+        Demo: use any <b>@college.edu</b> email &amp; password (min 6 chars)
+      </p>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="registerForm" class="hidden">
+      <div class="form-group">
+        <label>Full Name</label>
+        <input type="text" id="regName" placeholder="Your full name" />
+      </div>
+      <div class="form-group">
+        <label>College Email ID</label>
+        <input type="email" id="regEmail" placeholder="yourname@college.edu" />
+      </div>
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" id="regPass" placeholder="Min 6 characters" />
+      </div>
+      <div id="registerError"></div>
+      <button class="btn btn-primary mt-3" style="width:100%" onclick="doRegister()">✅ Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================================================
+     APP SHELL
+================================================ -->
+<div id="appShell" class="hidden">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-header">
+      <div class="s-icon">📚</div>
+      <div>
+        <h2>Pathshala</h2>
+        <p>Syllabus Tracker</p>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <div class="nav-section-title">Main</div>
+      <button class="nav-item active" onclick="showPage('dashboard')" id="nav-dashboard">
+        <span class="nav-icon">🏠</span> Dashboard
+      </button>
+      <button class="nav-item" onclick="showPage('subjects')" id="nav-subjects">
+        <span class="nav-icon">📖</span> All Subjects
+      </button>
+      <button class="nav-item" onclick="showPage('assignments')" id="nav-assignments">
+        <span class="nav-icon">📝</span> Assignments
+      </button>
+
+      <div class="nav-section-title">Community</div>
+      <button class="nav-item" onclick="showPage('community')" id="nav-community">
+        <span class="nav-icon">🤝</span> Community Notes
+      </button>
+
+      <div class="nav-section-title">Settings</div>
+      <button class="nav-item" onclick="showPage('profile')" id="nav-profile">
+        <span class="nav-icon">👤</span> Profile
+      </button>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-chip">
+        <div class="avatar" id="sidebarAvatar">?</div>
+        <div style="min-width:0">
+          <div class="user-name" id="sidebarName">Student</div>
+          <div class="user-email" id="sidebarEmail">email@college.edu</div>
+        </div>
+      </div>
+      <button class="btn-logout" onclick="doLogout()">🚪 Logout</button>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+    <button class="hamburger" onclick="toggleSidebar()">☰</button>
+
+    <!-- Reminder banners -->
+    <div id="reminderZone"></div>
+
+    <!-- DASHBOARD PAGE -->
+    <div class="page active" id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Welcome back 👋</div>
+          <div class="page-subtitle" id="dashGreeting">Loading...</div>
+        </div>
+        <button class="btn btn-accent btn-sm" onclick="showPage('assignments')">➕ Add Assignment</button>
+      </div>
+      <div class="grid-4" style="margin-bottom:1.5rem" id="statsRow"></div>
+      <h3 style="font-size:1.05rem;font-weight:700;margin-bottom:.75rem;color:var(--primary)">📚 All Subjects</h3>
+      <div class="grid-3" id="subjectGrid"></div>
+    </div>
+
+    <!-- SUBJECTS LIST PAGE -->
+    <div class="page" id="page-subjects">
+      <div class="page-header">
+        <div>
+          <div class="page-title">📖 All Subjects</div>
+          <div class="page-subtitle">Click a subject to view study material</div>
+        </div>
+      </div>
+      <div class="grid-3" id="subjectList"></div>
+    </div>
+
+    <!-- SUBJECT DETAIL PAGE -->
+    <div class="page" id="page-subjectDetail">
+      <button class="back-btn" onclick="showPage('subjects')">← Back to Subjects</button>
+      <div class="page-header">
+        <div>
+          <div class="page-title" id="detailTitle">Subject Name</div>
+          <div class="page-subtitle" id="detailSubtitle">Type</div>
+        </div>
+        <span class="badge badge-blue" id="detailBadge">Theory</span>
+      </div>
+      <div class="tabs">
+        <button class="tab active" onclick="switchTab('notes')">📄 Notes</button>
+        <button class="tab" onclick="switchTab('policy')">📋 Course Policy</button>
+        <button class="tab" onclick="switchTab('videos')">▶️ YouTube Videos</button>
+      </div>
+      <div class="tab-panel active" id="tab-notes"></div>
+      <div class="tab-panel" id="tab-policy"></div>
+      <div class="tab-panel" id="tab-videos"></div>
+    </div>
+
+    <!-- ASSIGNMENTS PAGE -->
+    <div class="page" id="page-assignments">
+      <div class="page-header">
+        <div>
+          <div class="page-title">📝 Assignment Tracker</div>
+          <div class="page-subtitle">Set your deadlines and get reminders 48 hrs &amp; 24 hrs before</div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="toggleAssignForm()">➕ Add Assignment</button>
+      </div>
+
+      <div class="assign-form hidden" id="assignForm">
+        <h4 style="font-weight:700;margin-bottom:.85rem;color:var(--primary)">➕ New Assignment</h4>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Assignment Title</label>
+            <input type="text" id="assignTitle" placeholder="e.g. Unit 2 Assignment" />
+          </div>
+          <div class="form-group">
+            <label>Subject</label>
+            <select id="assignSubject"><option value="">-- Select Subject --</option></select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Due Date &amp; Time</label>
+            <input type="datetime-local" id="assignDue" />
+          </div>
+          <div class="form-group">
+            <label>Notes (optional)</label>
+            <input type="text" id="assignNote" placeholder="Any extra info..." />
+          </div>
+        </div>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+          <button class="btn btn-primary btn-sm" onclick="addAssignment()">✅ Save Assignment</button>
+          <button class="btn btn-outline btn-sm" onclick="toggleAssignForm()">Cancel</button>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:.5rem;margin-bottom:1rem;flex-wrap:wrap">
+        <button class="btn btn-sm btn-outline" onclick="filterAssign('all')" id="fa-all">All</button>
+        <button class="btn btn-sm" style="background:var(--bg);border:1.5px solid var(--border)" onclick="filterAssign('pending')" id="fa-pending">⏳ Pending</button>
+        <button class="btn btn-sm" style="background:var(--bg);border:1.5px solid var(--border)" onclick="filterAssign('done')" id="fa-done">✅ Completed</button>
+        <button class="btn btn-sm" style="background:var(--bg);border:1.5px solid var(--border)" onclick="filterAssign('overdue')" id="fa-overdue">🔴 Overdue</button>
+      </div>
+
+      <div class="assign-list" id="assignList"></div>
+    </div>
+
+    <!-- COMMUNITY NOTES PAGE -->
+    <div class="page" id="page-community">
+      <div class="page-header">
+        <div>
+          <div class="page-title">🤝 Community Notes</div>
+          <div class="page-subtitle">Share your personal notes with everyone</div>
+        </div>
+        <button class="btn btn-accent btn-sm" onclick="toggleShareForm()">📤 Share Note</button>
+      </div>
+
+      <div class="share-form hidden" id="shareForm">
+        <h4 style="font-weight:700;margin-bottom:.85rem;color:var(--primary)">📤 Share Your Note</h4>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Note Title</label>
+            <input type="text" id="noteTitle" placeholder="e.g. Linear Algebra Cheat Sheet" />
+          </div>
+          <div class="form-group">
+            <label>Subject Tag</label>
+            <select id="noteSubject"><option value="">-- Select Subject --</option></select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Content / Description</label>
+          <textarea id="noteContent" placeholder="Write your note or paste a link to Google Drive / PDF..."></textarea>
+        </div>
+        <div style="display:flex;gap:.6rem;flex-wrap:wrap">
+          <button class="btn btn-accent btn-sm" onclick="shareNote()">🚀 Post Note</button>
+          <button class="btn btn-outline btn-sm" onclick="toggleShareForm()">Cancel</button>
+        </div>
+      </div>
+
+      <div style="margin-bottom:.85rem">
+        <select id="communityFilter" style="max-width:240px" onchange="renderCommunityNotes()">
+          <option value="">All Subjects</option>
+        </select>
+      </div>
+      <div id="communityList"></div>
+    </div>
+
+    <!-- PROFILE PAGE -->
+    <div class="page" id="page-profile">
+      <div class="page-header">
+        <div class="page-title">👤 Profile</div>
+      </div>
+      <div class="card" style="max-width:480px">
+        <div style="display:flex;align-items:center;gap:1rem;margin-bottom:1.25rem">
+          <div class="avatar" style="width:56px;height:56px;font-size:1.3rem" id="profileAvatar">?</div>
+          <div>
+            <div style="font-size:1.1rem;font-weight:800" id="profileName">Student</div>
+            <div class="text-muted text-sm" id="profileEmail">email@college.edu</div>
+          </div>
+        </div>
+        <div style="background:var(--bg);border-radius:9px;padding:.85rem 1rem;font-size:.88rem">
+          <b>Role:</b> Student &nbsp;|&nbsp; <b>College Email Verified</b> ✅
+        </div>
+        <div style="margin-top:1rem;display:flex;gap:.6rem;flex-wrap:wrap">
+          <button class="btn btn-outline btn-sm">✏️ Edit Profile</button>
+          <button class="btn btn-danger btn-sm" onclick="doLogout()">🚪 Logout</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- CHATBOT WIDGET -->
+<button id="chatToggle" onclick="toggleChat()" title="Ask AI Assistant">🤖</button>
+<div id="chatBox">
+  <div class="chat-header">
+    <div class="bot-avatar">🤖</div>
+    <div>
+      <h4>Pathshala AI Assistant</h4>
+      <p>Always here to help</p>
+    </div>
+  </div>
+  <div class="chat-msgs" id="chatMsgs"></div>
+  <div class="chat-suggestions" id="chatSuggestions">
+    <span class="chat-chip" onclick="chatAsk('What subjects are there?')">Subjects</span>
+    <span class="chat-chip" onclick="chatAsk('How to add an assignment?')">Assignments</span>
+    <span class="chat-chip" onclick="chatAsk('How to share notes?')">Share Notes</span>
+    <span class="chat-chip" onclick="chatAsk('When do I get reminders?')">Reminders</span>
+  </div>
+  <div class="chat-input-row">
+    <input type="text" id="chatInput" placeholder="Ask something..." onkeydown="if(event.key==='Enter')sendChat()" />
+    <button class="chat-send" onclick="sendChat()">➤</button>
+  </div>
+</div>
+
+<script>
+
+/* ====================================================
+   DATA: ALL 11 SUBJECTS with Notes, Policy, Videos
+==================================================== */
+const SUBJECTS = [
+  {
+    id: 'lade', name: 'Linear Algebra & Differential Equation', type: 'Theory',
+    icon: '📐', color: '#dbeafe',
+    notes: [
+      { title: 'Unit 1 – Matrices & Determinants', desc: 'Covers row reduction, inverse, and rank.' },
+      { title: 'Unit 2 – Eigenvalues & Eigenvectors', desc: 'Characteristic equation, diagonalization.' },
+      { title: 'Unit 3 – Differential Equations (ODE)', desc: 'First order and higher order ODEs.' },
+      { title: 'Unit 4 – Laplace Transform', desc: 'Definition, properties, inverse Laplace.' },
+    ],
+    policy: `<b>Course Policy – LADE</b><br><br>
+      <b>Attendance:</b> Minimum 75% attendance is mandatory.<br><br>
+      <b>Evaluation:</b><br>
+      &bull; Mid-Semester Exam: 30 marks<br>
+      &bull; End-Semester Exam: 60 marks<br>
+      &bull; Assignments/Quiz: 10 marks<br><br>
+      <b>Textbooks:</b><br>
+      &bull; Higher Engineering Mathematics – B.S. Grewal<br>
+      &bull; Advanced Engineering Mathematics – Erwin Kreyszig<br><br>
+      <b>Late submissions lose 10% marks per day.</b>`,
+    videos: [
+      { title: '3Blue1Brown – Essence of Linear Algebra', channel: '3Blue1Brown', url: 'https://youtube.com/playlist?list=PLZHQObOWTQDPD3MizzM2xVFitgF8hE_ab' },
+      { title: 'MIT OCW – Linear Algebra (Gilbert Strang)', channel: 'MIT OpenCourseWare', url: 'https://www.youtube.com/playlist?list=PLE7DDD91010BC51F8' },
+      { title: 'Differential Equations Full Course', channel: 'Professor Leonard', url: 'https://www.youtube.com/playlist?list=PLDesaqWTN534LgEUmJEFHHWE4e5B3N0Ts' },
+    ]
+  },
+  {
+    id: 'ladelab', name: 'LADE Lab', type: 'Laboratory',
+    icon: '🔬', color: '#d1fae5',
+    notes: [
+      { title: 'Lab Manual – MATLAB Basics', desc: 'Intro to MATLAB for matrix operations.' },
+      { title: 'Exp 1 – Solving Linear Systems', desc: 'Using MATLAB built-in functions.' },
+      { title: 'Exp 2 – Plotting ODE Solutions', desc: 'Using ode45 and ode23 solvers.' },
+    ],
+    policy: `<b>Lab Policy – LADE Lab</b><br><br>
+      <b>Attendance:</b> 100% lab attendance required.<br><br>
+      <b>Lab Record:</b> Must be submitted every week.<br><br>
+      <b>Evaluation:</b><br>
+      &bull; Continuous Assessment: 50 marks<br>
+      &bull; End Lab Exam + Viva: 50 marks`,
+    videos: [
+      { title: 'MATLAB for Beginners – Full Tutorial', channel: 'MathWorks', url: 'https://www.youtube.com/watch?v=T_ekAD7U-wU' },
+    ]
+  },
+  {
+    id: 'beee', name: 'BEEE', type: 'Theory',
+    icon: '⚡', color: '#fef3c7',
+    notes: [
+      { title: 'Unit 1 – DC Circuits', desc: 'KVL, KCL, Thevenin and Norton theorems.' },
+      { title: 'Unit 2 – AC Circuits', desc: 'Phasors, impedance, resonance.' },
+      { title: 'Unit 3 – Transformers', desc: 'Single phase, efficiency, regulation.' },
+      { title: 'Unit 4 – DC & AC Machines', desc: 'Motors and generators overview.' },
+      { title: 'Unit 5 – Power Electronics', desc: 'Diodes, transistors, MOSFET basics.' },
+    ],
+    policy: `<b>Course Policy – BEEE</b><br><br>
+      <b>Attendance:</b> 75% mandatory. Below 65% — no exam hall ticket.<br><br>
+      <b>Evaluation:</b><br>
+      &bull; Internal Assessment (2 tests): 20 marks<br>
+      &bull; End-Semester Exam: 70 marks<br>
+      &bull; Assignment: 10 marks<br><br>
+      <b>Reference Books:</b><br>
+      &bull; Basic Electrical Engineering – D.P. Kothari & I.J. Nagrath<br>
+      &bull; Electronics Fundamentals – Thomas Floyd`,
+    videos: [
+      { title: 'Basic Electrical Engineering Full Course', channel: 'Neso Academy', url: 'https://www.youtube.com/playlist?list=PLBlnK6fEyqRjJpx5BV96m2KkyL-b5GQFJ' },
+      { title: 'Electronics – Crash Course', channel: 'CrashCourse', url: 'https://www.youtube.com/watch?v=0UaJ-VxEjbc' },
+    ]
+  },
+  {
+    id: 'beeelab', name: 'BEEE Lab', type: 'Laboratory',
+    icon: '🔌', color: '#fee2e2',
+    notes: [
+      { title: 'Exp 1 – Verification of KVL & KCL', desc: 'Practical circuit measurements.' },
+      { title: 'Exp 2 – Thevenin\'s Theorem', desc: 'Finding Thevenin equivalent circuit.' },
+      { title: 'Exp 3 – RLC Resonance', desc: 'Series and parallel resonance curves.' },
+    ],
+    policy: `<b>Lab Policy – BEEE Lab</b><br><br>
+      Wear lab coat. No mobile phones during experiments.<br><br>
+      <b>Evaluation:</b><br>
+      &bull; Day-to-day performance: 40 marks<br>
+      &bull; Final exam: 60 marks<br><br>
+      Handle instruments carefully. Any damage will be charged to the student.`,
+    videos: [
+      { title: 'BEEE Lab Experiments – Explained', channel: 'Engineering Made Easy', url: 'https://www.youtube.com/watch?v=example' },
+    ]
+  },
+  {
+    id: 'wd', name: 'Web Development', type: 'Theory',
+    icon: '🌐', color: '#ede9fe',
+    notes: [
+      { title: 'Unit 1 – HTML5 & Semantics', desc: 'Tags, forms, tables, semantic elements.' },
+      { title: 'Unit 2 – CSS3 & Flexbox/Grid', desc: 'Selectors, box model, layouts.' },
+      { title: 'Unit 3 – JavaScript Fundamentals', desc: 'Variables, functions, DOM manipulation.' },
+      { title: 'Unit 4 – React Basics', desc: 'Components, props, state, hooks.' },
+      { title: 'Unit 5 – Node.js & Express', desc: 'Server-side, REST APIs, middleware.' },
+    ],
+    policy: `<b>Course Policy – Web Development</b><br><br>
+      <b>Attendance:</b> 75% minimum.<br><br>
+      <b>Evaluation:</b><br>
+      &bull; Project (Mini + Main): 40 marks<br>
+      &bull; Quiz / Viva: 20 marks<br>
+      &bull; End-Semester Exam: 40 marks<br><br>
+      <b>Resources:</b> MDN Web Docs, freeCodeCamp.org, The Odin Project`,
+    videos: [
+      { title: 'HTML & CSS Full Course – freeCodeCamp', channel: 'freeCodeCamp', url: 'https://www.youtube.com/watch?v=916GWv2Qs08' },
+      { title: 'JavaScript Full Course for Beginners', channel: 'Bro Code', url: 'https://www.youtube.com/watch?v=8dWL3wB6NZo' },
+      { title: 'React JS Full Course 2024', channel: 'Dave Gray', url: 'https://www.youtube.com/watch?v=RVFAyFWO4go' },
+    ]
+  },
+  {
+    id: 'wdlab', name: 'Web Development Lab', type: 'Laboratory',
+    icon: '💻', color: '#dbeafe',
+    notes: [
+      { title: 'Lab Exercise 1 – HTML Portfolio Page', desc: 'Build your personal portfolio with HTML.' },
+      { title: 'Lab Exercise 2 – Responsive CSS Layout', desc: 'Use Flexbox and media queries.' },
+      { title: 'Lab Exercise 3 – JavaScript Calculator', desc: 'DOM manipulation and event listeners.' },
+      { title: 'Lab Exercise 4 – Mini Project', desc: 'Any web app of your choice (like Pathshala!).' },
+    ],
+    policy: `<b>Lab Policy – Web Development Lab</b><br><br>
+      Submit all lab exercises via GitHub. Plagiarism = zero marks.<br><br>
+      <b>Evaluation:</b><br>
+      &bull; Weekly submissions: 30 marks<br>
+      &bull; Mini Project: 30 marks<br>
+      &bull; Final Lab Exam: 40 marks`,
+    videos: [
+      { title: 'Git & GitHub Crash Course', channel: 'Traversy Media', url: 'https://www.youtube.com/watch?v=SWYqp7iY_Tc' },
+    ]
+  },
+  {
+    id: 'qp', name: 'Quantum Physics', type: 'Theory',
+    icon: '⚛️', color: '#f0fdf4',
+    notes: [
+      { title: 'Unit 1 – Wave-Particle Duality', desc: 'de Broglie hypothesis, Davisson-Germer.' },
+      { title: 'Unit 2 – Schrödinger Equation', desc: 'Time-dependent and independent forms.' },
+      { title: 'Unit 3 – Quantum Mechanics Postulates', desc: 'Operators, observables, Heisenberg.' },
+      { title: 'Unit 4 – Applications', desc: 'Particle in a box, hydrogen atom model.' },
+    ],
+    policy: `<b>Course Policy – Quantum Physics</b><br><br>
+      <b>Attendance:</b> 75% mandatory.<br><br>
+      <b>Evaluation:</b><br>
+      &bull; Mid-Sem: 30 marks<br>
+      &bull; End-Sem: 60 marks<br>
+      &bull; Surprise Quiz: 10 marks<br><br>
+      <b>Reference Books:</b><br>
+      &bull; Introduction to Quantum Mechanics – Griffiths<br>
+      &bull; Concepts of Modern Physics – Arthur Beiser`,
+    videos: [
+      { title: 'Quantum Mechanics – MIT OpenCourseWare', channel: 'MIT OCW', url: 'https://www.youtube.com/playlist?list=PLUl4u3cNGP60cspQn3N9dYRPiyVWDd80G' },
+      { title: 'Quantum Physics for Beginners', channel: 'PBS Space Time', url: 'https://www.youtube.com/watch?v=p7bzE1E5PMY' },
+    ]
+  },
+  {
+    id: 'qplab', name: 'Quantum Physics Lab', type: 'Laboratory',
+    icon: '🔭', color: '#fdf4ff',
+    notes: [
+      { title: 'Exp 1 – Photoelectric Effect', desc: 'Measuring work function and Planck constant.' },
+      { title: 'Exp 2 – Hydrogen Spectrum', desc: 'Spectral lines and Rydberg constant.' },
+      { title: 'Exp 3 – Electron Diffraction', desc: 'Wave nature of electrons demonstrated.' },
+    ],
+    policy: `<b>Lab Policy – Quantum Physics Lab</b><br><br>
+      Handle optical instruments with care. Always wear safety goggles.<br><br>
+      <b>Evaluation:</b><br>
+      &bull; Record & viva: 50 marks<br>
+      &bull; End Lab Exam: 50 marks`,
+    videos: [
+      { title: 'Photoelectric Effect – Khan Academy', channel: 'Khan Academy', url: 'https://www.youtube.com/watch?v=Kv8xPWaQo14' },
+    ]
+  },
+  {
+    id: 'pr', name: 'Product Realization', type: 'Theory',
+    icon: '🏭', color: '#fff7ed',
+    notes: [
+      { title: 'Unit 1 – Product Design Process', desc: 'Ideation, prototyping, design thinking.' },
+      { title: 'Unit 2 – Manufacturing Processes', desc: 'Casting, machining, 3D printing, injection molding.' },
+      { title: 'Unit 3 – Quality & Standards', desc: 'ISO, Six Sigma, TQM basics.' },
+      { title: 'Unit 4 – Supply Chain & Costing', desc: 'BOM, supply chain, break-even analysis.' },
+    ],
+    policy: `<b>Course Policy – Product Realization</b><br><br>
+      <b>Evaluation:</b><br>
+      &bull; Project (Group of 3–5): 40 marks<br>
+      &bull; Presentation: 20 marks<br>
+      &bull; End-Semester: 40 marks<br><br>
+      Each group must submit a prototype by mid-semester.`,
+    videos: [
+      { title: 'Design Thinking Crash Course', channel: 'Stanford d.school', url: 'https://www.youtube.com/watch?v=_r0VX-aU_T8' },
+      { title: 'Manufacturing Processes Overview', channel: 'NPTEL', url: 'https://www.youtube.com/watch?v=iHFsTKCxM1U' },
+    ]
+  },
+  {
+    id: 'prlab', name: 'Product Realization Lab', type: 'Laboratory',
+    icon: '🔧', color: '#fef9c3',
+    notes: [
+      { title: 'Lab 1 – 3D Printing Basics', desc: 'Using FDM printer, slicing software (Cura).' },
+      { title: 'Lab 2 – PCB Design', desc: 'KiCad basics, schematic to board.' },
+      { title: 'Lab 3 – Prototype Assembly', desc: 'Final product assembly and testing.' },
+    ],
+    policy: `<b>Lab Policy – Product Realization Lab</b><br><br>
+      Safety first. No loose clothing near moving machinery.<br><br>
+      <b>Evaluation:</b><br>
+      &bull; Individual Lab Tasks: 40 marks<br>
+      &bull; Group Prototype: 60 marks`,
+    videos: [
+      { title: '3D Printing for Beginners', channel: "Maker's Muse", url: 'https://www.youtube.com/watch?v=nb-Bzf4nQdE' },
+    ]
+  },
+  {
+    id: 'bc', name: 'Business Communication', type: 'Theory',
+    icon: '💬', color: '#f1f5f9',
+    notes: [
+      { title: 'Unit 1 – Basics of Communication', desc: 'Process, barriers, and models of communication.' },
+      { title: 'Unit 2 – Written Communication', desc: 'Emails, reports, memos, letters.' },
+      { title: 'Unit 3 – Oral Communication', desc: 'Presentations, group discussions, interviews.' },
+      { title: 'Unit 4 – Non-Verbal Communication', desc: 'Body language, appearance, proxemics.' },
+    ],
+    policy: `<b>Course Policy – Business Communication</b><br><br>
+      <b>Attendance:</b> 75% mandatory.<br><br>
+      <b>Evaluation:</b><br>
+      &bull; Group Discussion & Presentation: 20 marks<br>
+      &bull; Written Assignment: 10 marks<br>
+      &bull; Mid-Semester: 30 marks<br>
+      &bull; End-Semester: 40 marks`,
+    videos: [
+      { title: 'Business Communication Full Course', channel: 'NPTEL', url: 'https://www.youtube.com/watch?v=4L5WPaJdnuE' },
+      { title: 'Public Speaking Tips for Students', channel: 'TED', url: 'https://www.youtube.com/watch?v=eIho2S0ZahI' },
+    ]
+  },
+];
+
+/* ====================================================
+   CHATBOT QUESTIONS & ANSWERS
+==================================================== */
+const CHAT_FAQ = [
+  { keys: ['subject','subjects','all subject'], reply: 'Pathshala has 11 subjects:\n1. Linear Algebra & DE\n2. LADE Lab\n3. BEEE\n4. BEEE Lab\n5. Web Development\n6. WD Lab\n7. Quantum Physics\n8. QP Lab\n9. Product Realization\n10. PR Lab\n11. Business Communication\n\nClick any subject to view notes, policy, and videos!' },
+  { keys: ['assignment','add assignment','deadline','due'], reply: 'To add an assignment:\n1. Go to Assignments in the sidebar\n2. Click Add Assignment\n3. Fill in the title, subject, and due date\n4. Hit Save!\n\nYou will see reminder banners 48 hrs and 24 hrs before the deadline!' },
+  { keys: ['reminder','remind','48','24 hr','notification'], reply: 'Reminder banners appear at the top when:\n⚠️ An assignment is due within 48 hours\n🔴 An assignment is due within 24 hours\nThey refresh every time you open the app!' },
+  { keys: ['share note','community','post note','upload note'], reply: 'To share a note:\n1. Go to Community Notes\n2. Click Share Note\n3. Add a title, select subject, and write content or paste a link\n4. Click Post Note!\n\nEveryone logged in can see it.' },
+  { keys: ['login','register','sign up','college email'], reply: 'Login requires a college email (e.g., name@college.edu) and a password of minimum 6 characters.' },
+  { keys: ['notes','study material','material'], reply: 'Each subject has 3 tabs:\nNotes – Unit-wise study notes\nCourse Policy – Attendance, marks, books\nYouTube Videos – Curated video links\n\nClick any subject to explore!' },
+  { keys: ['progress','complete','tick','done'], reply: 'In the Assignment Tracker, tick the checkbox next to any assignment to mark it as completed!' },
+  { keys: ['profile','account'], reply: 'Go to Profile in the sidebar to see your account details and log out.' },
+  { keys: ['logout','log out','sign out'], reply: 'You can log out from the sidebar bottom or the Profile page.' },
+  { keys: ['hi','hello','hey','hii'], reply: 'Hello! I am the Pathshala AI Assistant. I can help you with:\n• Subjects and study material\n• Assignment deadlines\n• Community notes\n• How to use the app\n\nJust ask me anything!' },
+  { keys: ['help'], reply: 'Here is what I can help with:\n1. Subjects & Study Material\n2. Assignment Deadlines & Reminders\n3. Community Notes\n4. Login / Registration\n5. App Navigation\n\nJust type your question!' },
+  { keys: ['beee','electrical'], reply: 'BEEE covers DC Circuits, AC Circuits, Transformers, DC & AC Machines, and Power Electronics. Click BEEE in the subjects page for notes, policy, and videos!' },
+  { keys: ['quantum','physics'], reply: 'Quantum Physics covers Wave-Particle Duality, Schrodinger Equation, Quantum Mechanics postulates, and applications. Find video links from MIT OCW in the subject page!' },
+  { keys: ['web development','html','css','javascript'], reply: 'Web Development covers HTML5, CSS3, JavaScript, React, and Node.js. Head to the Web Development subject for notes and free course links!' },
+];
+
+/* ====================================================
+   APP STATE (variables that hold data)
+==================================================== */
+let currentUser    = null;   // stores logged-in user { name, email }
+let assignments    = [];     // stores all assignments
+let communityNotes = [];     // stores all shared notes
+let chatOpen       = false;  // is chatbot open?
+let assignFilter   = 'all';  // which filter is active
+
+/* ====================================================
+   HELPER FUNCTIONS
+==================================================== */
+// Get element by id (shorter to write)
+function $(id){ return document.getElementById(id); }
+
+// Save data to browser's localStorage (acts like a mini database)
+function saveData(){
+  localStorage.setItem('pathshala_assignments', JSON.stringify(assignments));
+  localStorage.setItem('pathshala_community',   JSON.stringify(communityNotes));
+}
+
+// Load data from localStorage when app starts
+function loadData(){
+  assignments    = JSON.parse(localStorage.getItem('pathshala_assignments') || '[]');
+  communityNotes = JSON.parse(localStorage.getItem('pathshala_community')   || '[]');
+}
+
+// Get all registered users
+function getUsers(){
+  return JSON.parse(localStorage.getItem('pathshala_users') || '[]');
+}
+
+// Save users list
+function saveUsers(arr){
+  localStorage.setItem('pathshala_users', JSON.stringify(arr));
+}
+
+// Format a date nicely (e.g. 25 Mar 2025, 10:30 AM)
+function fmtDate(iso){
+  if(!iso) return '';
+  const d = new Date(iso);
+  return d.toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit' });
+}
+
+// How many hours until a deadline?
+function hoursUntil(iso){
+  return (new Date(iso) - Date.now()) / 3600000;
+}
+
+/* ====================================================
+   AUTHENTICATION (Login / Register / Logout)
+==================================================== */
+// Switch between Login and Register tabs
+function switchAuthTab(tab){
+  document.querySelectorAll('.tab-btn').forEach((b,i) =>
+    b.classList.toggle('active', i === (tab==='login' ? 0 : 1))
+  );
+  $('loginForm').classList.toggle('hidden', tab !== 'login');
+  $('registerForm').classList.toggle('hidden', tab !== 'register');
+}
+
+// Register a new student
+function doRegister(){
+  const name  = $('regName').value.trim();
+  const email = $('regEmail').value.trim().toLowerCase();
+  const pass  = $('regPass').value;
+  const errEl = $('registerError');
+  errEl.textContent = '';
+
+  // Validation checks
+  if(!name)                           return errEl.textContent = '⚠️ Please enter your name.';
+  if(!email.includes('@college.edu')) return errEl.textContent = '⚠️ Please use your college email (e.g., name@college.edu).';
+  if(pass.length < 6)                 return errEl.textContent = '⚠️ Password must be at least 6 characters.';
+
+  const users = getUsers();
+  if(users.find(u => u.email === email)) return errEl.textContent = '⚠️ This email is already registered.';
+
+  users.push({ name, email, pass });
+  saveUsers(users);
+  errEl.style.color = 'green';
+  errEl.textContent = '✅ Account created! Please login.';
+  setTimeout(() => switchAuthTab('login'), 1200);
+}
+
+// Login existing student
+function doLogin(){
+  const email = $('loginEmail').value.trim().toLowerCase();
+  const pass  = $('loginPass').value;
+  const errEl = $('loginError');
+  errEl.textContent = '';
+
+  if(!email.includes('@college.edu')) return errEl.textContent = '⚠️ Please use your college email (e.g., name@college.edu).';
+  if(pass.length < 6)                 return errEl.textContent = '⚠️ Password must be at least 6 characters.';
+
+  const users = getUsers();
+  let user = users.find(u => u.email === email && u.pass === pass);
+
+  // Demo mode: auto-create account if not found (so you can test easily)
+  if(!user){
+    if(users.find(u => u.email === email)) return errEl.textContent = '⚠️ Incorrect password.';
+    const name = email.split('@')[0].replace('.',' ').replace(/\b\w/g, c => c.toUpperCase());
+    users.push({ name, email, pass });
+    saveUsers(users);
+    user = { name, email, pass };
+  }
+
+  currentUser = { name: user.name, email: user.email };
+  localStorage.setItem('pathshala_session', JSON.stringify(currentUser));
+  loadData();
+  launchApp();
+}
+
+// Logout
+function doLogout(){
+  currentUser = null;
+  localStorage.removeItem('pathshala_session');
+  $('appShell').classList.add('hidden');
+  $('loginPage').style.display = 'flex';
+  $('chatBox').classList.remove('open');
+}
+
+// Check if already logged in (when page reloads)
+function checkSession(){
+  const s = localStorage.getItem('pathshala_session');
+  if(s){ currentUser = JSON.parse(s); loadData(); launchApp(); }
+}
+
+/* ====================================================
+   APP LAUNCH (runs after successful login)
+==================================================== */
+function launchApp(){
+  $('loginPage').style.display = 'none';
+  $('appShell').classList.remove('hidden');
+
+  // Set user info in sidebar and profile
+  const initials = currentUser.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  $('sidebarAvatar').textContent  = initials;
+  $('sidebarName').textContent    = currentUser.name;
+  $('sidebarEmail').textContent   = currentUser.email;
+  $('profileAvatar').textContent  = initials;
+  $('profileName').textContent    = currentUser.name;
+  $('profileEmail').textContent   = currentUser.email;
+  $('dashGreeting').textContent   = `Hello, ${currentUser.name.split(' ')[0]}! Here's your academic overview.`;
+
+  populateSubjectSelects();
+  renderDashboard();
+  showPage('dashboard');
+  checkReminders();
+
+  // Initialize chatbot
+  $('chatMsgs').innerHTML = '';
+  addChatMsg('bot', `Hi ${currentUser.name.split(' ')[0]}! 👋 I'm your Pathshala AI Assistant. Ask me about subjects, assignments, or how to use the app!`);
+}
+
+/* ====================================================
+   PAGE NAVIGATION
+==================================================== */
+function showPage(page){
+  // Hide all pages, then show the selected one
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  $('page-' + page).classList.add('active');
+  const ni = $('nav-' + page);
+  if(ni) ni.classList.add('active');
+
+  // Close sidebar on mobile after clicking
+  if(window.innerWidth <= 700) $('sidebar').classList.remove('open');
+
+  // Refresh data for each page
+  if(page === 'dashboard')   renderDashboard();
+  if(page === 'subjects')    renderSubjectList();
+  if(page === 'assignments') renderAssignments();
+  if(page === 'community')   renderCommunityNotes();
+}
+
+// Toggle mobile sidebar
+function toggleSidebar(){
+  $('sidebar').classList.toggle('open');
+}
+
+/* ====================================================
+   REMINDER BANNERS (48hr and 24hr alerts)
+==================================================== */
+function checkReminders(){
+  const zone = $('reminderZone');
+  zone.innerHTML = '';
+  const myAssigns = assignments.filter(a => a.userId === currentUser.email && !a.done);
+
+  myAssigns.forEach(a => {
+    const h = hoursUntil(a.due);
+    if(h > 0 && h <= 24){
+      // Due within 24 hours — RED alert
+      zone.innerHTML += `<div class="alert alert-danger fade-up">🔴 <b>24-Hour Alert!</b> "${a.title}" (${a.subject}) is due in <b>${Math.ceil(h)} hour(s)</b>!</div>`;
+    } else if(h > 24 && h <= 48){
+      // Due within 48 hours — ORANGE warning
+      zone.innerHTML += `<div class="alert alert-warn fade-up">⚠️ <b>48-Hour Reminder:</b> "${a.title}" (${a.subject}) is due in <b>${Math.ceil(h)} hours</b>.</div>`;
+    } else if(h <= 0){
+      // Already overdue
+      zone.innerHTML += `<div class="alert alert-danger fade-up">🔴 <b>Overdue!</b> "${a.title}" (${a.subject}) was due on ${fmtDate(a.due)}.</div>`;
+    }
+  });
+}
+
+/* ====================================================
+   DASHBOARD
+==================================================== */
+function renderDashboard(){
+  checkReminders();
+  const myAssigns = assignments.filter(a => a.userId === currentUser.email);
+  const done      = myAssigns.filter(a => a.done).length;
+  const pending   = myAssigns.filter(a => !a.done && hoursUntil(a.due) > 0).length;
+  const overdue   = myAssigns.filter(a => !a.done && hoursUntil(a.due) <= 0).length;
+
+  // Stats cards at top
+  $('statsRow').innerHTML = `
+    <div class="stat-card fade-up">
+      <div class="stat-icon blue">📚</div>
+      <div><div class="stat-val">${SUBJECTS.length}</div><div class="stat-lbl">Total Subjects</div></div>
+    </div>
+    <div class="stat-card fade-up" style="animation-delay:.06s">
+      <div class="stat-icon amber">⏳</div>
+      <div><div class="stat-val">${pending}</div><div class="stat-lbl">Pending Assignments</div></div>
+    </div>
+    <div class="stat-card fade-up" style="animation-delay:.12s">
+      <div class="stat-icon green">✅</div>
+      <div><div class="stat-val">${done}</div><div class="stat-lbl">Completed</div></div>
+    </div>
+    <div class="stat-card fade-up" style="animation-delay:.18s">
+      <div class="stat-icon red">🔴</div>
+      <div><div class="stat-val">${overdue}</div><div class="stat-lbl">Overdue</div></div>
+    </div>
+  `;
+
+  // Subject grid
+  $('subjectGrid').innerHTML = SUBJECTS.map((s,i) => {
+    const sAssigns = myAssigns.filter(a => a.subject === s.name && !a.done).length;
+    return `
+      <div class="subject-card fade-up" style="animation-delay:${i * .04}s" onclick="openSubject('${s.id}')">
+        <div class="s-icon-wrap" style="background:${s.color}">${s.icon}</div>
+        <h3>${s.name}</h3>
+        <div class="s-type">${s.type}</div>
+        <div style="display:flex;align-items:center;margin-top:.3rem">
+          ${sAssigns > 0
+            ? `<span class="badge badge-amber">📝 ${sAssigns} pending</span>`
+            : `<span class="badge badge-green">✅ All clear</span>`}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* ====================================================
+   SUBJECTS LIST PAGE
+==================================================== */
+function renderSubjectList(){
+  $('subjectList').innerHTML = SUBJECTS.map((s,i) => `
+    <div class="subject-card fade-up" style="animation-delay:${i * .04}s" onclick="openSubject('${s.id}')">
+      <div class="s-icon-wrap" style="background:${s.color}">${s.icon}</div>
+      <h3>${s.name}</h3>
+      <div class="s-type">${s.type}</div>
+      <div class="progress-bar mt-2">
+        <div class="progress-fill" style="width:${Math.random()*60+30}%"></div>
+      </div>
+      <div class="text-xs text-muted mt-1">Click to view study material →</div>
+    </div>`).join('');
+}
+
+/* ====================================================
+   SUBJECT DETAIL (Notes, Policy, Videos)
+==================================================== */
+function openSubject(id){
+  const s = SUBJECTS.find(x => x.id === id);
+
+  // Set title and badge
+  $('detailTitle').textContent    = s.name;
+  $('detailSubtitle').textContent = s.type;
+  $('detailBadge').textContent    = s.type;
+  $('detailBadge').className      = `badge ${s.type === 'Laboratory' ? 'badge-green' : 'badge-blue'}`;
+
+  // Fill Notes tab
+  $('tab-notes').innerHTML = s.notes.map(n => `
+    <div class="note-item">
+      <div class="note-item-icon">📄</div>
+      <div>
+        <h4>${n.title}</h4>
+        <p>${n.desc}</p>
+      </div>
+    </div>`).join('');
+
+  // Fill Course Policy tab
+  $('tab-policy').innerHTML = `
+    <div class="card" style="line-height:1.8;font-size:.9rem">${s.policy}</div>`;
+
+  // Fill YouTube Videos tab
+  $('tab-videos').innerHTML = s.videos.map(v => `
+    <div class="yt-card" onclick="window.open('${v.url}','_blank')">
+      <div class="yt-thumb">▶</div>
+      <div>
+        <h4>${v.title}</h4>
+        <p>${v.channel}</p>
+      </div>
+    </div>`).join('');
+
+  // Reset to first tab (Notes)
+  document.querySelectorAll('.tab').forEach((t,i)      => t.classList.toggle('active', i === 0));
+  document.querySelectorAll('.tab-panel').forEach((p,i) => p.classList.toggle('active', i === 0));
+
+  showPage('subjectDetail');
+  $('nav-subjects').classList.add('active');
+}
+
+// Switch between Notes / Policy / Videos tabs
+function switchTab(name){
+  const idx = { notes:0, policy:1, videos:2 }[name];
+  document.querySelectorAll('.tab').forEach((t,i)       => t.classList.toggle('active', i === idx));
+  document.querySelectorAll('.tab-panel').forEach((p,i) => p.classList.toggle('active', i === idx));
+}
+
+/* ====================================================
+   ASSIGNMENT TRACKER
+==================================================== */
+// Populate subject dropdowns
+function populateSubjectSelects(){
+  const opts = SUBJECTS.map(s => `<option value="${s.name}">${s.name}</option>`).join('');
+  $('assignSubject').innerHTML = '<option value="">-- Select Subject --</option>' + opts;
+  $('noteSubject').innerHTML   = '<option value="">-- Select Subject --</option>' + opts;
+  $('communityFilter').innerHTML = '<option value="">All Subjects</option>' + opts;
+}
+
+// Show/hide the Add Assignment form
+function toggleAssignForm(){
+  const f = $('assignForm');
+  f.classList.toggle('hidden');
+  if(!f.classList.contains('hidden')){
+    // Default to tomorrow
+    const d = new Date(Date.now() + 86400000);
+    d.setMinutes(0);
+    $('assignDue').value = d.toISOString().slice(0, 16);
+  }
+}
+
+// Save a new assignment
+function addAssignment(){
+  const title   = $('assignTitle').value.trim();
+  const subject = $('assignSubject').value;
+  const due     = $('assignDue').value;
+  const note    = $('assignNote').value.trim();
+
+  // Validate inputs
+  if(!title)   return alert('⚠️ Please enter assignment title.');
+  if(!subject) return alert('⚠️ Please select a subject.');
+  if(!due)     return alert('⚠️ Please set a due date.');
+
+  // Add assignment to the list
+  assignments.push({
+    id: Date.now(),       // unique id using current timestamp
+    title, subject, due, note,
+    done: false,
+    userId: currentUser.email  // link to current user
+  });
+
+  saveData();
+  // Clear form fields
+  $('assignTitle').value   = '';
+  $('assignSubject').value = '';
+  $('assignNote').value    = '';
+  toggleAssignForm();
+  renderAssignments();
+  checkReminders();
+}
+
+// Filter assignments by type
+function filterAssign(type){
+  assignFilter = type;
+  // Reset all filter buttons
+  ['all','pending','done','overdue'].forEach(t => {
+    const btn = $('fa-' + t);
+    btn.style.background  = '';
+    btn.style.color       = '';
+    btn.style.borderColor = '';
+  });
+  // Highlight selected filter button
+  const sel = $('fa-' + type);
+  sel.style.background  = 'var(--primary)';
+  sel.style.color       = '#fff';
+  sel.style.borderColor = 'var(--primary)';
+  renderAssignments();
+}
+
+// Display assignments list
+function renderAssignments(){
+  let items = assignments.filter(a => a.userId === currentUser.email);
+
+  // Apply filter
+  if(assignFilter === 'pending') items = items.filter(a => !a.done && hoursUntil(a.due) > 0);
+  else if(assignFilter === 'done')    items = items.filter(a => a.done);
+  else if(assignFilter === 'overdue') items = items.filter(a => !a.done && hoursUntil(a.due) <= 0);
+
+  // Sort by due date (earliest first)
+  items.sort((a,b) => new Date(a.due) - new Date(b.due));
+
+  if(items.length === 0){
+    $('assignList').innerHTML = `<div class="card text-muted" style="text-align:center;padding:2rem">
+      🎉 No assignments here! ${assignFilter === 'all' ? 'Click ➕ Add Assignment to get started.' : ''}
+    </div>`;
+    return;
+  }
+
+  $('assignList').innerHTML = items.map(a => {
+    const h = hoursUntil(a.due);
+    // Set color class based on urgency
+    const dueClass = a.done ? '' : (h <= 0 ? 'overdue' : h <= 24 ? 'urgent' : 'normal');
+    // Set due label text
+    const dueLabel = a.done
+      ? '✅ Done'
+      : h <= 0   ? `⛔ Overdue (${fmtDate(a.due)})`
+      : h <= 24  ? `🔴 Due in ${Math.ceil(h)}hr`
+      : h <= 48  ? `⚠️ Due in ${Math.ceil(h)}hr`
+      : `📅 ${fmtDate(a.due)}`;
+
+    return `
+      <div class="assign-item ${a.done ? 'done' : ''} fade-up">
+        <input type="checkbox" class="a-check" ${a.done ? 'checked' : ''}
+          onchange="toggleDone(${a.id})" title="Mark as done"/>
+        <div style="flex:1;min-width:0">
+          <div class="a-title" style="${a.done ? 'text-decoration:line-through' : ''}">${a.title}</div>
+          <div class="a-subject">📚 ${a.subject} ${a.note ? '· ' + a.note : ''}</div>
+        </div>
+        <div class="a-due ${dueClass}">${dueLabel}</div>
+        <button class="btn btn-sm btn-danger" onclick="deleteAssign(${a.id})" title="Delete">🗑</button>
+      </div>`;
+  }).join('');
+}
+
+// Mark assignment as done / not done
+function toggleDone(id){
+  const a = assignments.find(x => x.id === id);
+  if(a){ a.done = !a.done; saveData(); renderAssignments(); checkReminders(); }
+}
+
+// Delete an assignment
+function deleteAssign(id){
+  if(!confirm('Delete this assignment?')) return;
+  assignments = assignments.filter(a => a.id !== id);
+  saveData(); renderAssignments(); checkReminders();
+}
+
+/* ====================================================
+   COMMUNITY NOTES
+==================================================== */
+// Show/hide the Share Note form
+function toggleShareForm(){
+  $('shareForm').classList.toggle('hidden');
+}
+
+// Post a new community note
+function shareNote(){
+  const title   = $('noteTitle').value.trim();
+  const subject = $('noteSubject').value;
+  const content = $('noteContent').value.trim();
+
+  if(!title)   return alert('⚠️ Please enter a note title.');
+  if(!subject) return alert('⚠️ Please select a subject.');
+  if(!content) return alert('⚠️ Please add some content or a link.');
+
+  // Add note at beginning of array (newest first)
+  communityNotes.unshift({
+    id: Date.now(),
+    title, subject, content,
+    author: currentUser.name,
+    authorEmail: currentUser.email,
+    time: new Date().toISOString()
+  });
+
+  saveData();
+  $('noteTitle').value   = '';
+  $('noteSubject').value = '';
+  $('noteContent').value = '';
+  toggleShareForm();
+  renderCommunityNotes();
+}
+
+// Display all community notes
+function renderCommunityNotes(){
+  let notes = [...communityNotes];
+  const filter = $('communityFilter').value;
+  if(filter) notes = notes.filter(n => n.subject === filter);
+
+  if(notes.length === 0){
+    $('communityList').innerHTML = `<div class="card text-muted" style="text-align:center;padding:2rem">
+      📭 No notes shared yet. Be the first to share! Click 📤 Share Note above.
+    </div>`;
+    return;
+  }
+
+  $('communityList').innerHTML = notes.map(n => {
+    const isLink = n.content.startsWith('http');
+    return `
+      <div class="community-card fade-up">
+        <div class="c-header">
+          <h3>📝 ${n.title}</h3>
+          <span class="badge badge-purple">${n.subject}</span>
+        </div>
+        <div class="c-body">
+          ${isLink
+            ? `🔗 <a href="${n.content}" target="_blank" style="color:var(--primary-light);font-weight:600">${n.content}</a>`
+            : n.content}
+        </div>
+        <div class="c-footer">
+          <span class="c-author">👤 ${n.author}</span>
+          <span class="c-author">🕐 ${fmtDate(n.time)}</span>
+          ${n.authorEmail === currentUser.email
+            ? `<button class="btn btn-sm btn-danger" onclick="deleteNote(${n.id})">🗑 Delete</button>`
+            : ''}
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// Delete your own community note
+function deleteNote(id){
+  if(!confirm('Delete this note?')) return;
+  communityNotes = communityNotes.filter(n => n.id !== id);
+  saveData(); renderCommunityNotes();
+}
+
+/* ====================================================
+   AI CHATBOT
+==================================================== */
+// Open/close chatbot
+function toggleChat(){
+  chatOpen = !chatOpen;
+  $('chatBox').classList.toggle('open', chatOpen);
+  $('chatToggle').textContent = chatOpen ? '✕' : '🤖';
+}
+
+// Add a message bubble to the chat window
+function addChatMsg(from, text){
+  const msgs = $('chatMsgs');
+  const div  = document.createElement('div');
+  div.className = `msg ${from}`;
+  div.innerHTML  = `<div class="msg-bubble">${text.replace(/\n/g, '<br>')}</div>`;
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;  // scroll to bottom
+}
+
+// Send user message
+function sendChat(){
+  const input = $('chatInput');
+  const text  = input.value.trim();
+  if(!text) return;
+  input.value = '';
+  addChatMsg('user', text);
+  // Small delay before bot replies (feels more natural)
+  setTimeout(() => addChatMsg('bot', getBotReply(text)), 400);
+}
+
+// Click on a suggestion chip
+function chatAsk(q){
+  $('chatInput').value = q;
+  sendChat();
+}
+
+// Find the best FAQ answer for a user message
+function getBotReply(msg){
+  const lower = msg.toLowerCase();
+  for(const faq of CHAT_FAQ){
+    if(faq.keys.some(k => lower.includes(k))) return faq.reply;
+  }
+  // Default reply if no match found
+  return `Hmm, I didn't catch that! 🤔 Try asking about:\n• Subjects\n• Assignments\n• Reminders\n• Community Notes\n• Login/Register\n\nOr type "help" for a full list!`;
+}
+
+/* ====================================================
+   START THE APP when page loads
+==================================================== */
+window.onload = function(){
+  checkSession();  // Check if user is already logged in
+};
+
+</script>
+</body>
+</html>
